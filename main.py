@@ -104,6 +104,7 @@ gravatar = Gravatar(app,
 
 #admin_only PYTHON DECORATOR
 def admin_only(func):
+    # It copies the metadata of func → into wrapper.
     @wraps(func)
     def wrapper_func(*args,**kwargs):
         if not current_user.id==1 or not current_user.is_authenticated:
@@ -145,6 +146,7 @@ def login():
             flash("Inncorrect password. Please try again.")
             return redirect(url_for('login'))
         else:
+            # Logs a user in. You should pass the actual user object to this. 
             login_user(user)
             return redirect(url_for('get_all_posts'))
     return render_template("login.html",form=form)
@@ -185,7 +187,7 @@ def show_post(post_id):
 @app.route("/new-post", methods=["GET", "POST"])
 
 def add_new_post():
-    if current_user.is_authenticated and current_user.is_authenticated:
+    if current_user.is_authenticated and current_user.id==1:
         form = CreatePostForm()
         if form.validate_on_submit():
             new_post = BlogPost(
